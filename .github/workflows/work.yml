@@ -1,0 +1,36 @@
+name: 'run'
+
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'setup python'
+        uses: actions/setup-python@master
+        with: 
+          python-version: 3.7
+
+      - name: requirements
+        run : pip3 install -r requirements.txt
+
+      - name: main
+        env:
+          SCKEY: ${{ secrets.SCKEY }}
+          SCTKEY: ${{ secrets.SCTKEY }}
+          Skey: ${{ secrets.Skey }}
+          Smode: ${{ secrets.Smode }}
+          pushplus_token: ${{ secrets.pushplus_token }}
+          pushplus_topic: ${{ secrets.pushplus_topic }}
+          tg_token: ${{ secrets.tg_token }}
+          tg_chatid: ${{ secrets.tg_chatid }}
+          tg_api_host: ${{ secrets.tg_api_host }}
+          xgd_username: ${{ secrets.xgd_username }}
+          xgd_password: ${{ secrets.xgd_password }}
+          xgd_name: ${{ secrets.xgd_name }}
+        run: |
+          python3 ./xgdYqtb/xgd.py
