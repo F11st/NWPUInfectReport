@@ -1,2 +1,4 @@
 requests
 PyCryptodome
+bs4
+lxml

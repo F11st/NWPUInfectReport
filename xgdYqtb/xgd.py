@@ -1,6 +1,7 @@
 from requests.sessions import Session
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5
+from bs4 import BeautifulSoup
 import base64
 import os
 try:
@@ -30,9 +31,8 @@ class XgdYqtb:
         self.session = Session()
         return self.session
 
-    def login(self, username, password, personalName):
+    def login(self, username, password):
         self.username = username
-        self.personalName = personalName
         self.session.get(self.casUrl)
         self.session.post(self.casUrl, data={
             'username': username,
@@ -41,6 +41,11 @@ class XgdYqtb:
             'execution': 'e1s1',
             '_eventId': 'submit'
         })
+        # 获取个人信息
+        infoRes = self.session.get('http://yqtb.nwpu.edu.cn/wx/ry/jbxx_v.jsp')
+        soup = BeautifulSoup(infoRes.text, 'lxml')
+        self.personalName = soup.select('#form1 > div:nth-child(5) > div:nth-child(2) > span')[0].text
+        
 
     def checkin(self):
         res = self.session.post(self.yqtbUrl, data={
@@ -63,9 +68,8 @@ class XgdYqtb:
 
 xgd_username = os.environ.get('xgd_username')
 xgd_password = os.environ.get('xgd_password')
-xgd_name = os.environ.get('xgd_name')
 
 yq = XgdYqtb()
 yq.getSession()
-yq.login(xgd_username, xgd_password, xgd_name)
+yq.login(xgd_username, xgd_password)
 yq.checkin()

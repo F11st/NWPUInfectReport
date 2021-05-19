@@ -5,10 +5,9 @@
 1. 点击项目右上角的Fork，Fork此项目
 2. 到自己Fork的项目点击Actions，如果未启用，需要手动启用，然后启用需要运行的Workflows
 3. 到自己Fork的项目点击Setting→Secrets→New secrets
-4. 填写Name，和Value，需要添加以下四个
+4. 填写Name，和Value，需要添加以下三个
     - xgd_username -> 学号
     - xgd_password -> 密码
-    - xgd_name -> 个人姓名
     - Skey(可选) -> [https://cp.xuthus.cc/](https://cp.xuthus.cc/)申请，用于推送qq，或自行设置其他推送
 5. 在"Actions"中的"run"下点击"Run workflow"即可手动执行签到，后续运行按照schedule，默认在每天10:00自动签到，可自行修改
 
