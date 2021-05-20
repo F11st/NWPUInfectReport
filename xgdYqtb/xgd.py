@@ -63,7 +63,7 @@ class XgdYqtb:
             'userName': self.personalName,
             'bdzt': '1'
         }, headers={'referer': 'http://yqtb.nwpu.edu.cn/wx/ry/jrsb.jsp'})
-        pusher(res.text)
+        pusher(res.text.strip())
 
 
 xgd_username = os.environ.get('xgd_username')
