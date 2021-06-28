@@ -9,6 +9,7 @@ try:
 except:
     pass
 
+
 class XgdYqtb:
     def __init__(self):
         self.session = None
@@ -17,7 +18,7 @@ class XgdYqtb:
         self.publicKey = '''-----BEGIN PUBLIC KEY-----
          MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/nQioYooptPfdIHVzPiKRVT5+DW5+nqzav3DOxY+HYKjO9nFjYdj0sgvRae6iVpa5Ji1wbDKOvwIDNukgnKbqvFXX2Isfl0RxeN3uEKdjeFGGFdr38I3ADCNKFNxtbmfqvjQIDAQAB
          -----END PUBLIC KEY-----'''
-        
+
         self.username = None
         self.personalName = None
 
@@ -44,10 +45,16 @@ class XgdYqtb:
         # 获取个人信息
         infoRes = self.session.get('http://yqtb.nwpu.edu.cn/wx/ry/jbxx_v.jsp')
         soup = BeautifulSoup(infoRes.text, 'lxml')
-        self.personalName = soup.select('#form1 > div:nth-child(5) > div:nth-child(2) > span')[0].text
-        
+        try:
+            self.personalName = soup.select(
+                '#form1 > div:nth-child(5) > div:nth-child(2) > span')[0].text
+        except Exception as e:
+            self.personalName = None
+            pusher("获取个人信息失败")
 
     def checkin(self):
+        if self.personalName == None:
+            return
         res = self.session.post(self.yqtbUrl, data={
             'xasymt': '1',
             'actionType': 'addRbxx',
