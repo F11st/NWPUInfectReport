@@ -19,11 +19,9 @@ class XgdYqtb(object):
         self.public_key = '''-----BEGIN PUBLIC KEY-----
          MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/nQioYooptPfdIHVzPiKRVT5+DW5+nqzav3DOxY+HYKjO9nFjYdj0sgvRae6iVpa5Ji1wbDKOvwIDNukgnKbqvFXX2Isfl0RxeN3uEKdjeFGGFdr38I3ADCNKFNxtbmfqvjQIDAQAB
          -----END PUBLIC KEY-----'''
-
         self.username = None
 
         self.info = {}
-        self.personal_name = None
 
     def encrypt_password(self, ciper):
         recipient_key = RSA.import_key(self.public_key)
@@ -36,8 +34,6 @@ class XgdYqtb(object):
         return self.session
 
     def login(self, username, password):
-        if self.session == None:
-            self.get_session()
         self.username = username
         self.session.get(self.cas_url)
         self.session.post(self.cas_url, data={
@@ -59,22 +55,23 @@ class XgdYqtb(object):
                 except Exception as e:
                     print("城市匹配失败", cs, e)
                     return ''
-            res = self.session.get('http://yqtb.nwpu.edu.cn/wx/ry/jbxx_v.jsp')
+            res = self.session.get(
+                'http://yqtb.nwpu.edu.cn/wx/xg/yz-mobile/userInfo.jsp')
             res_tree = etree.HTML(res.text)
             try:
                 info_cell = res_tree.xpath('//div[@class="weui-cell"]')
                 for item in info_cell:
                     cell_key = item.xpath(
-                        './/label[@class="weui-label"]/text()')[0].replace('：', '')
+                        './/div[@class="weui-cell__bd"]/p/text()')[0]
                     value_xpath = item.xpath(
-                        './/span[@class="weui-cell__value"]/text()')
+                        './/div[@class="weui-cell__ft"]/text()')
                     if len(value_xpath) == 0:
                         cell_value = ''
                     else:
                         cell_value = value_xpath[0]
                     self.info[cell_key] = cell_value
-                self.info['csbm'] = get_csbm(self.info['所在户籍'].split()[-1])
-                # print(self.info)
+                self.info['csbm'] = get_csbm(self.info['家庭地址'].split()[-1])
+                print(self.info)
             except Exception as e:
                 print("获取个人信息失败", e)
         if len(self.info) == 0:
@@ -83,14 +80,14 @@ class XgdYqtb(object):
             return self.info[skey]
         return ''
 
-    def checkin(self, user_type, user_status):
+    def checkin(self, user_status):
         szcsmc = ''
         szcsbm = ''
         if user_status == '1':
             szcsmc = '在学校'
             szcsbm = '1'
         elif user_status == '2':
-            szcsmc = self.get_personal_info('所在户籍').replace(' ', '')
+            szcsmc = self.get_personal_info('家庭地址').replace(' ', '')
             szcsbm = self.get_personal_info('csbm')
         data = {
             'actionType': 'addRbxx',
@@ -103,7 +100,7 @@ class XgdYqtb(object):
             'sfqz': '0',
             'glqk': '0',
             'tbly': 'sso',
-            'userType': user_type,
+            'userType': '2',
             'userName': self.get_personal_info('姓名'),
             'bdzt': '1',
             'xymc': self.get_personal_info('学院/大类'),
@@ -119,9 +116,8 @@ class XgdYqtb(object):
 
 xgd_username = os.environ.get('xgd_username')
 xgd_password = os.environ.get('xgd_password')
-user_type = os.environ.get('user_type')
 user_status = os.environ.get('user_status')
 
 yq = XgdYqtb()
 yq.login(xgd_username, xgd_password)
-yq.checkin(user_type, user_status)
+yq.checkin(user_status)

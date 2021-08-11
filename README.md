@@ -2,6 +2,8 @@
 
 **自动打卡仅用于学习目的，任何与疫情相关的情况请如实填写！**
 
+------
+
 ### 使用流程
 
 1. 点击项目右上角的Fork，Fork此项目
@@ -10,10 +12,10 @@
 4. 填写Name，和Value，需要添加以下三个
     - xgd_username -> 学号
     - xgd_password -> 密码
-    - user_type -> 身份（硕士填2，本科？？？）
     - user_status -> 状态（在学校填1，在家填2）
     - Skey(可选) -> [https://cp.xuthus.cc/](https://cp.xuthus.cc/)申请，用于推送qq，或自行设置其他推送
 5. 在"Actions"中的"run"下点击"Run workflow"即可手动执行签到，后续运行按照schedule，默认在每天9:00自动签到，可自行修改
+6. 有问题可以提issue
 
 ### 推送可以设置的参数( Key/name(名称) --> Value(值) )：
 

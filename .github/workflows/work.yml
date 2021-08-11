@@ -31,7 +31,6 @@ jobs:
           tg_api_host: ${{ secrets.tg_api_host }}
           xgd_username: ${{ secrets.xgd_username }}
           xgd_password: ${{ secrets.xgd_password }}
-          user_type: ${{ secrets.user_type }}
           user_status: ${{ secrets.user_status }}
         run: |
           python3 ./xgdYqtb/xgd.py
