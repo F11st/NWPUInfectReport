@@ -34,6 +34,8 @@ class XgdYqtb(object):
         return self.session
 
     def login(self, username, password):
+        if self.session == None:
+            self.get_session()
         self.username = username
         self.session.get(self.cas_url)
         self.session.post(self.cas_url, data={
@@ -71,7 +73,7 @@ class XgdYqtb(object):
                         cell_value = value_xpath[0]
                     self.info[cell_key] = cell_value
                 self.info['csbm'] = get_csbm(self.info['家庭地址'].split()[-1])
-                print(self.info)
+                # print(self.info)
             except Exception as e:
                 print("获取个人信息失败", e)
         if len(self.info) == 0:
