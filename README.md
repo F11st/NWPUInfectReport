@@ -4,7 +4,7 @@
 
 ------
 
-### 使用流程
+## github action使用
 
 1. 点击项目右上角的Fork，Fork此项目
 2. 到自己Fork的项目点击Actions，如果未启用，需要手动启用，然后启用需要运行的Workflows
@@ -13,11 +13,18 @@
     - xgd_username -> 学号
     - xgd_password -> 密码
     - user_status -> 状态（在学校填1，在家填2）
-    - Skey(可选) -> [https://cp.xuthus.cc/](https://cp.xuthus.cc/)申请，用于推送qq，或自行设置其他推送
+    - Skey([可选](#推送可以设置的参数)) -> [https://cp.xuthus.cc/](https://cp.xuthus.cc/)申请，用于推送qq，或自行设置其他推送
 5. 在"Actions"中的"run"下点击"Run workflow"即可手动执行签到，后续运行按照schedule，默认在每天9:00自动签到，可自行修改
 6. 有问题可以提issue
 
-### 推送可以设置的参数( Key/name(名称) --> Value(值) )：
+## 腾讯云SCF使用
+
+1. 从github获取release版本zip包
+2. 在SCF中[新建函数](0001.jpg)
+
+## 推送可以设置的参数
+
+> Key(名称) --> Value(值) 
 
 Github Actions添加在Setting→Secrets→New secrets，腾讯云函数SCF设置在环境变量里
 

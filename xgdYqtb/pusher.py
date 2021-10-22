@@ -7,6 +7,7 @@ def pusher(*args):
     for i in range(1, len(args)):
         othermsg += args[i]
         othermsg += "\n"
+    # print(othermsg)
     SCKEY = os.environ.get('SCKEY') # http://sc.ftqq.com/
     SCTKEY = os.environ.get('SCTKEY') # http://sct.ftqq.com/
     Skey = os.environ.get('Skey') # https://cp.xuthus.cc/

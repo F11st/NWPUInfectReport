@@ -13,7 +13,7 @@ jobs:
       - name: 'setup python'
         uses: actions/setup-python@master
         with: 
-          python-version: 3.7
+          python-version: 3.6.1
 
       - name: requirements
         run : pip3 install -r requirements.txt
@@ -33,4 +33,4 @@ jobs:
           xgd_password: ${{ secrets.xgd_password }}
           user_status: ${{ secrets.user_status }}
         run: |
-          python3 ./xgdYqtb/xgd.py
+          python3 ./xgdYqtb/index.py
