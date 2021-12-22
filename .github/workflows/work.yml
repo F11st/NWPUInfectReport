@@ -32,5 +32,6 @@ jobs:
           xgd_username: ${{ secrets.xgd_username }}
           xgd_password: ${{ secrets.xgd_password }}
           user_status: ${{ secrets.user_status }}
+          is_tested: ${{ secrets.is_tested }}
         run: |
           python3 ./xgdYqtb/index.py

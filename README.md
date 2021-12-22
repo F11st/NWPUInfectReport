@@ -2,25 +2,31 @@
 
 **自动打卡仅用于学习目的，任何与疫情相关的情况请如实填写！**
 
-------
+---
+
+## 腾讯云SCF使用（推荐）
+
+1. 从github获取release版本zip包
+2. 在SCF中[新建函数](0001.jpg)
 
 ## github action使用
 
 1. 点击项目右上角的Fork，Fork此项目
 2. 到自己Fork的项目点击Actions，如果未启用，需要手动启用，然后启用需要运行的Workflows
 3. 到自己Fork的项目点击Setting→Secrets→New secrets
-4. 填写Name，和Value，需要添加以下三个
-    - xgd_username -> 学号
-    - xgd_password -> 密码
-    - user_status -> 状态（在学校填1，在家填2）
-    - Skey([可选](#推送可以设置的参数)) -> [https://cp.xuthus.cc/](https://cp.xuthus.cc/)申请，用于推送qq，或自行设置其他推送
+4. 填写Name和Value
 5. 在"Actions"中的"run"下点击"Run workflow"即可手动执行签到，后续运行按照schedule，默认在每天9:00自动签到，可自行修改
 6. 有问题可以提issue
 
-## 腾讯云SCF使用
+## 几个环境变量
 
-1. 从github获取release版本zip包
-2. 在SCF中[新建函数](0001.jpg)
+| 说明                             | Key          |
+| -------------------------------- | ------------ |
+| *学号                            | xgd_username |
+| *密码                            | xgd_password |
+| *状态（在学校填1，在家填2）      | user_status  |
+| *是否48h核酸检测（是填1，否填0） | is_tested    |
+| 推送                             | 可选         |
 
 ## 推送可以设置的参数
 

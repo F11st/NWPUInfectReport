@@ -120,7 +120,13 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             return self.info[skey]
         return ''
 
-    def checkin(self, user_status):
+    def get_submit_url_once(self):
+        res = self.session.get(
+            'http://yqtb.nwpu.edu.cn/wx/ry/jrsb.jsp')
+        url = re.search(r'ry_util[^\']+', res.text).group(0)
+        return url
+
+    def checkin(self, user_status, is_tested):
         szcsmc = ''
         szcsbm = ''
         if user_status == '1':
@@ -146,9 +152,11 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             'xymc': self.get_personal_info('学院/大类'),
             'xssjhm': self.get_personal_info('手机号码'),
             'szcsmc': szcsmc,
-            'szcsbm': szcsbm
+            'szcsbm': szcsbm,
+            'hsjc': is_tested,
         }
         # print(data)
-        res = self.session.post(self.yqtb_url, data=data,
+        # 获取请求链接
+        res = self.session.post('http://yqtb.nwpu.edu.cn/wx/ry/'+self.get_submit_url_once(), data=data,
                                 headers={'referer': 'http://yqtb.nwpu.edu.cn/wx/ry/jrsb.jsp'})
         pusher(res.text.strip())
