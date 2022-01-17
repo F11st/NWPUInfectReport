@@ -4,7 +4,6 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from lxml import etree
 import base64
 import re
-import json
 from pusher import pusher
 
 
@@ -12,13 +11,12 @@ class XgdYqtb(object):
     def __init__(self):
         self.session = None
         self.cas_url = 'https://uis.nwpu.edu.cn/cas/login?service=http%3A%2F%2Fyqtb.nwpu.edu.cn%2F%2Fsso%2Flogin.jsp%3FtargetUrl%3Dbase64aHR0cDovL3lxdGIubndwdS5lZHUuY24vL3d4L3hnL3l6LW1vYmlsZS9pbmRleC5qc3A%3D'
-        self.yqtb_url = 'http://yqtb.nwpu.edu.cn/wx/ry/ry_util.jsp'
+        self.yqtb_url = 'http://yqtb.nwpu.edu.cn/wx/ry/jrsb.jsp'
         self.public_key = '''-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/nQioYooptPfdIHVzPiKRVT5+DW5+nqzav3DOxY+HYKjO9nFjYdj0sgvRae6iVpa5Ji1wbDKOvwIDNukgnKbqvFXX2Isfl0RxeN3uEKdjeFGGFdr38I3ADCNKFNxtbmfqvjQIDAQAB
 -----END PUBLIC KEY-----'''
         self.username = None
 
-        self.info = {}
         self.get_session()
 
     def encrypt_password(self, plain):
@@ -46,117 +44,117 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             '_eventId': 'submit'
         })
 
-    def get_csbm(self, cs):
-        csbm = ''
-        # 转data.js内容为python dict,区划代码字典
-        res = self.session.get(
-            'http://yqtb.nwpu.edu.cn/wx/js/eams.area.data.js')
-        region_data_re = re.compile(r'var placesMap=(?P<addr>.*) ;')
-        region_dict = region_data_re.match(res.text).group('addr')
-        region_dict = json.loads(region_dict)
-        # 根据正则切割连续字符串，填报系统总是三段信息组成
-        fullname_re = re.compile(
-            r'^(?P<province>.+?自治区|.+?省|.+?行政区|.+?市)\s*(?P<city>市辖区|县|.+?市|.+?盟|.+?自治州|.+?地区|.+?行政区|.+?直辖县级行政区划|.+?省)\s*(?P<county>.+县|.+区|.+市|.+旗|.+海域|.+省|.+行政区|.+岛)?')
-        try:
-            re_result = fullname_re.match(cs)
-        except Exception as e:
-            print("城市匹配失败", cs, e)
-            return csbm
-
-        provice = re_result.group('province')
-        city = re_result.group('city')
-        county = re_result.group('county')
-
-        provice_code_list = []
-        city_code_list = []
-        county_code_list = []
-        for code, addr in region_dict.items():
-            if county != None and county == addr:
-                county_code_list.append(code)
-            elif city != None and city == addr and int(code) % 100 == 0:
-                city_code_list.append(code)
-            elif provice != None and provice == addr and int(code) % 10000 == 0:
-                provice_code_list.append(code)
-
-        if len(provice_code_list) != 1:
-            return csbm
-        csbm = provice_code_list[0]
-        for city_code in city_code_list:
-            if int(int(city_code)/10000)*10000 == int(csbm):
-                csbm = city_code
-        for county_code in county_code_list:
-            if int(int(county_code)/100)*100 == int(csbm):
-                csbm = county_code
-        return csbm
-
-    def init_info(self):
-        res = self.session.get(
-            'http://yqtb.nwpu.edu.cn/wx/xg/yz-mobile/userInfo.jsp')
-        res_tree = etree.HTML(res.text)
-        try:
-            info_cell = res_tree.xpath('//div[@class="weui-cell"]')
-            for item in info_cell:
-                cell_key = item.xpath(
-                    './/div[@class="weui-cell__bd"]/p/text()')[0]
-                value_xpath = item.xpath(
-                    './/div[@class="weui-cell__ft"]/text()')
-                if len(value_xpath) == 0:
-                    cell_value = ''
-                else:
-                    cell_value = value_xpath[0]
-                self.info[cell_key] = cell_value
-            csbm = self.get_csbm(self.info['家庭地址'])
-            # print("获取csdm成功")
-            if csbm:
-                self.info['csbm'] = csbm
-            # print(self.info)
-        except Exception as e:
-            print("获取个人信息失败", e)
-
-    def get_personal_info(self, skey):
-        if len(self.info) == 0:
-            self.init_info()
-        if skey in self.info:
-            return self.info[skey]
-        return ''
-
-    def get_submit_url_once(self):
-        res = self.session.get(
-            'http://yqtb.nwpu.edu.cn/wx/ry/jrsb.jsp')
-        url = re.search(r'ry_util[^\']+', res.text).group(0)
-        return url
-
-    def checkin(self, user_status, is_tested):
-        szcsmc = ''
-        szcsbm = ''
-        if user_status == '1':
-            szcsmc = '在学校'
-            szcsbm = '1'
-        elif user_status == '2':
-            szcsmc = self.get_personal_info('家庭地址').replace(' ', '')
-            szcsbm = self.get_personal_info('csbm')
-        data = {
-            'actionType': 'addRbxx',
-            'userLoginId': self.username,
-            'sfjt': '0',
-            'sfjcry': '0',
-            'sfjcqz': '0',
-            'sfjkqk': '0',
-            'sfyzz': '0',
-            'sfqz': '0',
-            'glqk': '0',
-            'tbly': 'sso',
-            'userType': '2',
-            'userName': self.get_personal_info('姓名'),
-            'bdzt': '1',
-            'xymc': self.get_personal_info('学院/大类'),
-            'xssjhm': self.get_personal_info('手机号码'),
-            'szcsmc': szcsmc,
-            'szcsbm': szcsbm,
-            'hsjc': is_tested,
+    def get_save_data(self, data):
+        return {
+            'hsjc': data['hsjc'],
+            'sfczbcqca': data['sfczbcqca'],
+            'czbcqcasjd': data['czbcqcasjd'],
+            'sfczbcfhyy': data['sfczbcfhyy'],
+            'czbcfhyysjd': data['czbcfhyysjd'],
+            'actionType': data['actionType'],
+            'userLoginId': data['userLoginId'],
+            'szcsbm': data['csbm'] if data['szcsbm'] == '3' else data['szcsbm'],
+            'szcsmc': data['gwcs'],
+            'sfjt': data['sfjt'],
+            'sfjtsm': data['sfjtsm'],
+            'sfjcry': data['sfjcry'],
+            'sfjcrysm': data['sfjcrysm'],
+            'sfjcqz': data['sfjcqz'],
+            'sfyzz': data['sfyzz'],
+            'sfqz': data['sfqz'],
+            'ycqksm': data['ycqksm'],
+            'glqk': data['glqk'],
+            'glksrq': data['glksrq'],
+            'gljsrq': data['gljsrq'],
+            'tbly': data['tbly'],
+            'glyy': data['glyy'],
+            'qtqksm': data['qtqksm'],
+            'sfjcqzsm': data['sfjcqzsm'],
+            'sfjkqk': data['sfjkqk'],
+            'jkqksm': data['jkqksm'],
+            'sfmtbg': data['sfmtbg'],
+            'userType': data['userType'],
+            'userName': data['userName'],
+            'qrlxzt': data['qrlxzt'],
+            'bdzt': data['bdzt'],
+            'xymc': data['xymc'],
+            'xssjhm': data['xssjhm']
         }
-        # print(data)
-        # 获取请求链接
-        res = self.session.post('http://yqtb.nwpu.edu.cn/wx/ry/'+self.get_submit_url_once(), data=data,
-                                headers={'referer': 'http://yqtb.nwpu.edu.cn/wx/ry/jrsb.jsp'})
+
+    def get_savefx_data(self, data):
+        return {}
+
+    def get_submit_info_once(self):
+        res = self.session.get(self.yqtb_url)
+        res_tree = etree.HTML(res.text)
+
+        data = {}
+        try:
+            data_from_html = {
+                'hsjc': '1',
+                'sfczbcqca': '',
+                'czbcqcasjd': '',
+                'sfczbcfhyy': '',
+                'czbcfhyysjd': '',
+                'sfmtbg': '',
+            }
+            script_text = res_tree.xpath('/html/body/script[2]')[0].text
+
+            submit_url_prefix = 'http://yqtb.nwpu.edu.cn/wx/ry/'
+            data['submit_url'] = submit_url_prefix + \
+                re.search(r'ry_util[^\']+', script_text).group(0)
+
+            data_from_html['userType'], data_from_html['userName'], data_from_html['qrlxzt'], data_from_html['bdzt'], data_from_html['xymc'], data_from_html['xssjhm'] = re.search(
+                r"userType:'([^']*)',userName:'([^']*)',qrlxzt:'([^']*)',bdzt:'([^']*)',xymc:'([^']*)',xssjhm:'([^']*)'", script_text).groups()
+            try:
+                data_from_html['csbm'] = re.search(
+                    r'select\("(\d+)"\);\s+\}', script_text, re.S).group(1)
+            except:
+                data_from_html['csbm'] = ''
+
+            cast_table = {
+                'sfjthb_ms': 'sfjtsm',
+                'hbjry_ms': 'sfjcrysm',
+                'ycqk_ms': 'ycqksm',
+                'jkqk_ms': 'jkqksm',
+                'radio2': 'sfjt',
+                'radio3': 'sfjcry',
+                'radio4': 'sfjcqz',
+                'radio5': 'sfyzz',
+                'radio6': 'sfqz',
+                'radio7': 'glqk',
+                'radio8': 'sfjkqk',
+            }
+            info_loc = res_tree.xpath(
+                "//textarea|//input[@type='radio' and @checked]|//input[@type='checkbox'][@checked]|//input[@type!='radio' and @type!='checkbox']")
+            for ele in info_loc:
+                attr = ele.attrib
+                try:
+                    key = cast_table[attr['name']]
+                except:
+                    key = attr['name']
+                if ele.tag == 'textarea':
+                    if ele.text == None:
+                        data_from_html[key] = ''
+                    else:
+                        data_from_html[key] = ele.text
+                else:
+                    data_from_html[key] = attr['value']
+
+            sub_cate = res_tree.xpath("//*[@id='save_div']")[0].attrib['href']
+            submit_data = {}
+            if sub_cate == 'javascript:save()':
+                submit_data = self.get_save_data(data_from_html)
+            else:
+                submit_data = self.get_savefx_data(data_from_html)
+            data['submit_data'] = submit_data
+
+        except Exception as e:
+            print("获取信息失败，可能需要手动签到一次", e)
+        return data
+
+    def checkin(self):
+        info = self.get_submit_info_once()
+        res = self.session.post(info['submit_url'], data=info['submit_data'],
+                                headers={'referer': self.yqtb_url})
         pusher(res.text.strip())
