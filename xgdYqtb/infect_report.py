@@ -82,7 +82,22 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
         }
 
     def get_savefx_data(self, data):
-        return {}
+        return {
+            'hsjc': data['hsjc'],
+            'xasymt': data['xasymt'],
+            'actionType': data['actionType'],
+            'userLoginId': data['userLoginId'],
+            'szcsbm': data['csbm'] if data['szcsbm'] == '3' else data['szcsbm'],
+            'bdzt': data['bdzt'],
+            'szcsmc': data['gwcs'],
+            'sfyzz': data['sfyzz'],
+            'sfqz': data['sfqz'],
+            'tbly': data['tbly'],
+            'qtqksm': data['qtqksm'],
+            'ycqksm': data['ycqksm'],
+            'userType': data['userType'],
+            'userName': data['userName'],
+        }
 
     def get_submit_info_once(self):
         res = self.session.get(self.yqtb_url)
@@ -124,6 +139,7 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
                 'radio6': 'sfqz',
                 'radio7': 'glqk',
                 'radio8': 'sfjkqk',
+                'radio11': 'xasymt',
             }
             info_loc = res_tree.xpath(
                 "//textarea|//input[@type='radio' and @checked]|//input[@type='checkbox'][@checked]|//input[@type!='radio' and @type!='checkbox']")
