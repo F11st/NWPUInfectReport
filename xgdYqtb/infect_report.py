@@ -10,12 +10,16 @@ from pusher import pusher
 class XgdYqtb(object):
     def __init__(self):
         self.session = None
-        self.cas_url = 'https://uis.nwpu.edu.cn/cas/login?service=http%3A%2F%2Fyqtb.nwpu.edu.cn%2F%2Fsso%2Flogin.jsp%3FtargetUrl%3Dbase64aHR0cDovL3lxdGIubndwdS5lZHUuY24vL3d4L3hnL3l6LW1vYmlsZS9pbmRleC5qc3A%3D'
-        self.yqtb_url = 'http://yqtb.nwpu.edu.cn/wx/ry/jrsb.jsp'
+        self.cas_url = 'https://uis.nwpu.edu.cn/cas/login?service=http%3A%2F%2Fyqtb.nwpu.edu.cn%2F%2Fsso%2Flogin.jsp%3FtargetUrl%3Dbase64aHR0cHM6Ly95cXRiLm53cHUuZWR1LmNuLy93eC94Zy95ei1tb2JpbGUvaW5kZXguanNw'
+        self.yqtb_url = 'https://yqtb.nwpu.edu.cn/wx/ry/jrsb_xs.jsp'
+        self.yqtb_index_url = 'https://yqtb.nwpu.edu.cn//wx/xg/yz-mobile/index.jsp'
         self.public_key = '''-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/nQioYooptPfdIHVzPiKRVT5+DW5+nqzav3DOxY+HYKjO9nFjYdj0sgvRae6iVpa5Ji1wbDKOvwIDNukgnKbqvFXX2Isfl0RxeN3uEKdjeFGGFdr38I3ADCNKFNxtbmfqvjQIDAQAB
 -----END PUBLIC KEY-----'''
         self.username = None
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36 Edg/100.0.1185.44'
+        }
 
         self.get_session()
 
@@ -42,7 +46,7 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             'currentMenu': '1',
             'execution': 'e1s1',
             '_eventId': 'submit'
-        })
+        }, headers=self.headers)
 
     def get_save_data(self, data):
         return {
@@ -100,6 +104,7 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
         }
 
     def get_submit_info_once(self):
+        self.session.get(self.yqtb_index_url)
         res = self.session.get(self.yqtb_url)
         res_tree = etree.HTML(res.text)
 
@@ -115,7 +120,7 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             }
             script_text = res_tree.xpath('/html/body/script[2]')[0].text
 
-            submit_url_prefix = 'http://yqtb.nwpu.edu.cn/wx/ry/'
+            submit_url_prefix = 'https://yqtb.nwpu.edu.cn/wx/ry/'
             data['submit_url'] = submit_url_prefix + \
                 re.search(r'ry_util[^\']+', script_text).group(0)
 
