@@ -121,8 +121,12 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             script_text = res_tree.xpath('/html/body/script[2]')[0].text
 
             submit_url_prefix = 'https://yqtb.nwpu.edu.cn/wx/ry/'
-            data['submit_url'] = submit_url_prefix + \
-                re.search(r'ry_util[^\']+', script_text).group(0)
+            try:
+                data['submit_url'] = submit_url_prefix + \
+                    re.search(r'ry_util[^\']+', script_text).group(0)
+            except:
+                data['res'] = '提交链接消失了？？？'
+                return data
 
             data_from_html['userType'], data_from_html['userName'], data_from_html['qrlxzt'], data_from_html['bdzt'], data_from_html['xymc'], data_from_html['xssjhm'] = re.search(
                 r"userType:'([^']*)',userName:'([^']*)',qrlxzt:'([^']*)',bdzt:'([^']*)',xymc:'([^']*)',xssjhm:'([^']*)'", script_text).groups()
@@ -169,13 +173,17 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             else:
                 submit_data = self.get_savefx_data(data_from_html)
             data['submit_data'] = submit_data
+            data['res'] = 'success'
 
         except Exception as e:
-            print("获取信息失败，可能需要手动签到一次", e)
+            data['res'] = "获取信息失败，可能需要手动签到一次:"+e
         return data
 
     def checkin(self):
         info = self.get_submit_info_once()
-        res = self.session.post(info['submit_url'], data=info['submit_data'],
-                                headers={'referer': self.yqtb_url})
-        pusher(res.text.strip())
+        if info['res'] == 'success':
+            res = self.session.post(info['submit_url'], data=info['submit_data'],
+                                    headers={'referer': self.yqtb_url})
+            pusher(res.text.strip())
+        else:
+            pusher(info['res'])
