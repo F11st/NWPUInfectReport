@@ -8,8 +8,8 @@
 
 ## 腾讯云SCF使用（推荐）
 
-1. 从github获取release版本zip包
-2. 在SCF中[新建函数](0001.jpg)
+1. 在SCF中[新建函数](0001.jpg)
+2. 在终端中执行`curl -L https://raw.githubusercontent.com/F11st/NWPUInfectReport/main/install.sh | bash`
 
 ## github action使用
 
