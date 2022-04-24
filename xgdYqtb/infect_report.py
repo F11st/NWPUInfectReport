@@ -10,7 +10,7 @@ from pusher import pusher
 class XgdYqtb(object):
     def __init__(self):
         self.session = None
-        self.cas_url = 'https://uis.nwpu.edu.cn/cas/login?service=http%3A%2F%2Fyqtb.nwpu.edu.cn%2F%2Fsso%2Flogin.jsp%3FtargetUrl%3Dbase64aHR0cHM6Ly95cXRiLm53cHUuZWR1LmNuLy93eC94Zy95ei1tb2JpbGUvaW5kZXguanNw'
+        self.cas_url = 'https://uis.nwpu.edu.cn/cas/login?service=https%3A%2F%2Fyqtb.nwpu.edu.cn%2F%2Fsso%2Flogin.jsp%3FtargetUrl%3Dbase64aHR0cHM6Ly95cXRiLm53cHUuZWR1LmNuLy93eC94Zy95ei1tb2JpbGUvaW5kZXguanNw'
         self.yqtb_url = 'https://yqtb.nwpu.edu.cn/wx/ry/jrsb_xs.jsp'
         self.yqtb_index_url = 'https://yqtb.nwpu.edu.cn//wx/xg/yz-mobile/index.jsp'
         self.public_key = '''-----BEGIN PUBLIC KEY-----
@@ -42,7 +42,7 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
         self.session.get(self.cas_url)
         self.session.post(self.cas_url, data={
             'username': username,
-            'password': self.encrypt_password(password),
+            'password': password,
             'currentMenu': '1',
             'execution': 'e1s1',
             '_eventId': 'submit'
@@ -104,7 +104,6 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
         }
 
     def get_submit_info_once(self):
-        self.session.get(self.yqtb_index_url)
         res = self.session.get(self.yqtb_url)
         res_tree = etree.HTML(res.text)
 
@@ -187,3 +186,4 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             pusher(res.text.strip())
         else:
             pusher(info['res'])
+            raise RuntimeError('调用失败')
