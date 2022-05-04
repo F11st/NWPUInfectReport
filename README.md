@@ -9,7 +9,11 @@
 ## 腾讯云SCF使用（推荐）
 
 1. 在SCF中[新建函数](0001.jpg)
-2. 在终端中执行`curl -L https://raw.githubusercontent.com/F11st/NWPUInfectReport/main/install.sh | bash`
+2. 在终端中执行
+   
+   `curl -L https://raw.githubusercontent.com/F11st/NWPUInfectReport/main/install.sh | bash`
+   
+   `curl -L https://raw.xn--gzu630h.xn--kpry57d/F11st/NWPUInfectReport/main/install_cdn.sh | bash`
 
 ## github action使用
 
@@ -23,10 +27,10 @@
 ## 几个环境变量
 
 | 说明  | Key          |
-| ----- | ------------ |
+| --- | ------------ |
 | *学号 | xgd_username |
 | *密码 | xgd_password |
-| 推送  | 可选         |
+| 推送  | 可选           |
 
 ## 推送可以设置的参数
 
@@ -43,4 +47,3 @@ Github Actions添加在Setting→Secrets→New secrets，腾讯云函数SCF设�
 7. Key: tg_token --> Value: Telegram bot的Token，Telegram机器人通知推送必填项
 8. Key: tg_chatid --> Value: 接收通知消息的Telegram用户的id，Telegram机器人通知推送必填项
 9. Key: tg_api_host --> Value: Telegram api自建的反向代理地址(不懂忽略此项)，默认tg官方api=api.telegram.org
-
