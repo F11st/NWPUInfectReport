@@ -6,9 +6,9 @@
 
 ---
 
-## 腾讯云SCF使用（推荐）
+## 阿里云函数使用（推荐）
 
-1. 在SCF中[新建函数](0001.jpg)
+1. 在云函数中新建函数
 2. 在终端中执行
    
    `curl -L https://raw.githubusercontent.com/F11st/NWPUInfectReport/main/install.sh | bash`
