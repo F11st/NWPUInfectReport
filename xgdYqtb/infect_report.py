@@ -5,7 +5,7 @@ from lxml import etree
 import base64
 import re
 from pusher import pusher
-
+#from lof
 
 class XgdYqtb(object):
     def __init__(self):
