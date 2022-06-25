@@ -39,12 +39,13 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
 
     def login(self, username, password):
         self.username = username
-        self.session.get(self.cas_url)
+        res = self.session.get(self.cas_url)
+        res_tree = etree.HTML(res.text)
         self.session.post(self.cas_url, data={
             'username': username,
             'password': password,
             'currentMenu': '1',
-            'execution': 'e1s1',
+            'execution': res_tree.xpath("//el-form[@id='fm1_m']/input[@name='execution']/@value")[0],
             '_eventId': 'submit'
         }, headers=self.headers)
 
