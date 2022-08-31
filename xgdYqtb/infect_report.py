@@ -10,7 +10,7 @@ from pusher import pusher
 class XgdYqtb(object):
     def __init__(self):
         self.session = None
-        self.cas_url = 'https://uis.nwpu.edu.cn/cas/login?service=https%3A%2F%2Fyqtb.nwpu.edu.cn%2F%2Fsso%2Flogin.jsp%3FtargetUrl%3Dbase64aHR0cHM6Ly95cXRiLm53cHUuZWR1LmNuLy93eC94Zy95ei1tb2JpbGUvaW5kZXguanNw'
+        self.cas_url = 'https://uis.nwpu.edu.cn/cas/login?service=http%3A%2F%2Fyqtb.nwpu.edu.cn%2F%2Fsso%2Flogin.jsp%3FtargetUrl%3Dbase64aHR0cDovL3lxdGIubndwdS5lZHUuY24vL3d4L3hnL3l6LW1vYmlsZS9pbmRleC5qc3A%3D'
         self.yqtb_url = 'https://yqtb.nwpu.edu.cn/wx/ry/jrsb_xs.jsp'
         self.yqtb_index_url = 'https://yqtb.nwpu.edu.cn//wx/xg/yz-mobile/index.jsp'
         self.public_key = '''-----BEGIN PUBLIC KEY-----
@@ -95,11 +95,15 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
             'szcsbm': data['csbm'] if data['szcsbm'] == '3' else data['szcsbm'],
             'bdzt': data['bdzt'],
             'szcsmc': data['gwcs'],
+            'szcsmc1': data['gwcs'],
             'sfyzz': data['sfyzz'],
             'sfqz': data['sfqz'],
             'tbly': data['tbly'],
             'qtqksm': data['qtqksm'],
             'ycqksm': data['ycqksm'],
+            'sfxn': data['sfxn'],
+            'sfdw': data['sfdw'],
+            'longlat': data['longlat'],
             'userType': data['userType'],
             'userName': data['userName'],
         }
@@ -118,12 +122,12 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
                 'czbcfhyysjd': '',
                 'sfmtbg': '',
             }
-            script_text = res_tree.xpath('/html/body/script[2]')[0].text
+            script_text = res_tree.xpath('/html/body/script[6]')[0].text
 
             submit_url_prefix = 'https://yqtb.nwpu.edu.cn/wx/ry/'
             try:
                 data['submit_url'] = submit_url_prefix + \
-                    re.search(r'ry_util[^\']+', script_text).group(0)
+                    re.search(r'ry_util\.jsp[^\']+', script_text).group(0)
             except:
                 data['res'] = '提交链接消失了？？？'
                 return data
