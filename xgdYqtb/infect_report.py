@@ -122,7 +122,7 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
                 'czbcfhyysjd': '',
                 'sfmtbg': '',
             }
-            script_text = res_tree.xpath('/html/body/script[6]')[0].text
+            script_text = res_tree.xpath('/html/body/script')[6].text
 
             submit_url_prefix = 'https://yqtb.nwpu.edu.cn/wx/ry/'
             try:
