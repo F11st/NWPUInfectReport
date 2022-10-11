@@ -9,45 +9,23 @@ from pusher import pusher
 
 class XgdYqtb(object):
     def __init__(self):
-        self.session = None
-        self.cas_url = 'https://uis.nwpu.edu.cn/cas/login?service=http%3A%2F%2Fyqtb.nwpu.edu.cn%2F%2Fsso%2Flogin.jsp%3FtargetUrl%3Dbase64aHR0cDovL3lxdGIubndwdS5lZHUuY24vL3d4L3hnL3l6LW1vYmlsZS9pbmRleC5qc3A%3D'
+        self.wx_login_url = 'https://wxapp.nwpu.edu.cn/uc/wap/login/check'
+        self.wx_redirect_url = 'https://wxapp.nwpu.edu.cn/uc/api/oauth/index?redirect=https://yqtb.nwpu.edu.cn/wx/common/metaWeiXin_new.jsp&appid=200200204192458714&state=1'
         self.yqtb_url = 'https://yqtb.nwpu.edu.cn/wx/ry/jrsb_xs.jsp'
         self.yqtb_index_url = 'https://yqtb.nwpu.edu.cn//wx/xg/yz-mobile/index.jsp'
-        self.public_key = '''-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/nQioYooptPfdIHVzPiKRVT5+DW5+nqzav3DOxY+HYKjO9nFjYdj0sgvRae6iVpa5Ji1wbDKOvwIDNukgnKbqvFXX2Isfl0RxeN3uEKdjeFGGFdr38I3ADCNKFNxtbmfqvjQIDAQAB
------END PUBLIC KEY-----'''
-        self.username = None
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36 Edg/100.0.1185.44'
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36 Edg/106.0.1370.37'
         }
-
-        self.get_session()
-
-    def encrypt_password(self, plain):
-        recipient_key = serialization.load_pem_public_key(
-            self.public_key.encode())
-        cipher = recipient_key.encrypt(
-            plain.encode(),
-            padding.PKCS1v15()
-        )
-        base_ciper = base64.b64encode(cipher).decode()
-        return '__RSA__'+base_ciper
-
-    def get_session(self):
+        
         self.session = Session()
-        return self.session
+        self.username = None
 
     def login(self, username, password):
         self.username = username
-        res = self.session.get(self.cas_url)
-        res_tree = etree.HTML(res.text)
-        self.session.post(self.cas_url, data={
+        self.session.post(self.wx_login_url, data={
             'username': username,
-            'password': password,
-            'currentMenu': '1',
-            'execution': res_tree.xpath("//el-form[@id='fm1_m']/input[@name='execution']/@value")[0],
-            '_eventId': 'submit'
-        }, headers=self.headers)
+            'password': password
+        })
 
     def get_save_data(self, data):
         return {
@@ -109,7 +87,7 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
         }
 
     def get_submit_info_once(self):
-        res = self.session.get(self.yqtb_url)
+        res = self.session.get(self.wx_redirect_url)
         res_tree = etree.HTML(res.text)
 
         data = {}
@@ -178,7 +156,6 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBQw6TmvJ+nOuRaLoHsZJGIBzRg/wbskNv6UevL3/n
                 submit_data = self.get_savefx_data(data_from_html)
             data['submit_data'] = submit_data
             data['res'] = 'success'
-
         except Exception as e:
             data['res'] = "获取信息失败，可能需要手动签到一次:"+e
         return data
