@@ -13,7 +13,7 @@
    
    `curl -L https://raw.githubusercontent.com/F11st/NWPUInfectReport/main/install.sh | bash`
    
-   `curl -L https://raw.xn--gzu630h.xn--kpry57d/F11st/NWPUInfectReport/main/install_cdn.sh | bash`
+   `curl -L https://ghproxy.com/https://raw.githubusercontent.com/F11st/NWPUInfectReport/main/install_cdn.sh | bash`
 
 ## github action使用
 

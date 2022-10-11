@@ -3,7 +3,7 @@ echo "[-] clean env..."
 rm -rf NWPUInfectReport
 
 echo "[-] clone latest version..."
-git clone https://hub.xn--gzu630h.xn--kpry57d/F11st/NWPUInfectReport
+git clone https://ghproxy.com/https://github.com/F11st/NWPUInfectReport
 
 cp -r NWPUInfectReport/xgdYqtb/* ./
 
